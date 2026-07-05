@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= pageDescription %>" />
+  <link rel="canonical" href="<%= siteUrl %>/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="<%= pageTitle %>" />
+  <meta property="og:description" content="<%= pageDescription %>" />
+  <meta property="og:url" content="<%= siteUrl %>/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ItemList structured data helps search engines understand this is a product listing page -->
+  <script type="application/ld+json">
+  <%- JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": listings.map((item, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "url": `${siteUrl}/products/${item.slug}`
+    }))
+  }) %>
+  </script>
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">G-SAT International</a>
+    <p class="tagline">Industrial Automation Parts — Live eBay Inventory</p>
+  </header>
+
+  <main>
+    <h1 class="page-heading">Shop Our Parts (<%= listings.length %> in stock)</h1>
+
+    <% if (listings.length === 0) { %>
+      <p class="empty-state">No active listings found right now. Check back soon.</p>
+    <% } else { %>
+      <div class="listings-grid">
+        <% listings.forEach(function(item) { %>
+          <a class="listing-card" href="/products/<%= item.slug %>">
+            <img
+              src="<%= item.image || '/static/placeholder.png' %>"
+              alt="<%= item.title %>"
+              loading="lazy"
+              width="220" height="180"
+            />
+            <div class="card-body">
+              <h2><%= item.title %></h2>
+              <div class="price"><%= item.currency %> <%= item.price %></div>
+              <div class="qty">
+                <% if (item.quantity - item.quantitySold > 0) { %>
+                  In stock: <%= item.quantity - item.quantitySold %>
+                <% } else { %>
+                  Out of stock
+                <% } %>
+              </div>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <%= new Date().getFullYear() %> G-SAT International. Listings sourced live from eBay.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= pageDescription %>" />
+  <link rel="canonical" href="<%= siteUrl %>/products/<%= item.slug %>" />
+
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content="<%= pageTitle %>" />
+  <meta property="og:description" content="<%= pageDescription %>" />
+  <meta property="og:url" content="<%= siteUrl %>/products/<%= item.slug %>" />
+  <% if (item.image) { %><meta property="og:image" content="<%= item.image %>" /><% } %>
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Product structured data — helps eligibility for rich results (price, availability, image) -->
+  <script type="application/ld+json">
+  <%- JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": item.title,
+    "image": item.images,
+    "description": pageDescription,
+    "sku": item.itemId,
+    "offers": {
+      "@type": "Offer",
+      "url": `${siteUrl}/products/${item.slug}`,
+      "priceCurrency": item.currency,
+      "price": item.price,
+      "availability": (item.quantityAvailable > 0)
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/UsedCondition"
+    }
+  }) %>
+  </script>
+
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">G-SAT International</a>
+    <p class="tagline">Industrial Automation Parts — Live eBay Inventory</p>
+  </header>
+
+  <main>
+    <nav class="breadcrumb"><a href="/">All Listings</a> / <span><%= item.title %></span></nav>
+
+    <div class="product-detail">
+      <div class="gallery">
+        <img class="main-image" src="<%= item.image || '/static/placeholder.png' %>" alt="<%= item.title %>" />
+        <% if (item.images.length > 1) { %>
+          <div class="thumbs">
+            <% item.images.forEach(function(img) { %>
+              <img class="thumb" src="<%= img %>" alt="<%= item.title %>" />
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="product-info">
+        <h1><%= item.title %></h1>
+        <div class="price"><%= item.currency %> <%= item.price %></div>
+
+        <div class="stock-badge <%= item.quantityAvailable > 0 ? 'in-stock' : 'out-of-stock' %>">
+          <% if (item.quantityAvailable > 0) { %>
+            ✅ In stock: <%= item.quantityAvailable %> available
+          <% } else { %>
+            ❌ Out of stock
+          <% } %>
+        </div>
+
+        <% if (item.condition) { %><p class="condition">Condition: <%= item.condition %></p><% } %>
+        <% if (item.location) { %><p class="location">Ships from: <%= item.location %></p><% } %>
+
+        <% if (item.specifics && item.specifics.length > 0) { %>
+          <table class="specifics-table">
+            <% item.specifics.forEach(function(spec) { %>
+              <tr><th><%= spec.name %></th><td><%= spec.value %></td></tr>
+            <% }); %>
+          </table>
+        <% } %>
+
+        <a class="buy-btn" href="<%= item.viewItemURL %>" target="_blank" rel="noopener">
+          Buy on eBay
+        </a>
+      </div>
+    </div>
+
+    <section class="description">
+      <h2>Description</h2>
+      <div class="description-body"><%- item.description %></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <%= new Date().getFullYear() %> G-SAT International. Listings sourced live from eBay.</p>
+  </footer>
+</body>
+</html>
