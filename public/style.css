@@ -57,13 +57,19 @@ main {
   border: 1px solid #e3e5e8;
   border-radius: 10px;
   overflow: hidden;
-  display: block;
+  display: flex;
+  flex-direction: column;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .listing-card:hover {
   box-shadow: 0 6px 18px rgba(12, 31, 63, 0.12);
   transform: translateY(-2px);
+}
+
+.listing-link {
+  display: block;
+  color: inherit;
 }
 
 .listing-card img {
@@ -76,6 +82,49 @@ main {
 
 .listing-card .card-body {
   padding: 14px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.row-btn {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #0654ba;
+  color: #0654ba;
+  background: #fff;
+}
+
+.row-btn:hover {
+  background: #eaf1fb;
+}
+
+.row-btn.whatsapp-btn {
+  border-color: #147a3f;
+  color: #147a3f;
+}
+
+.row-btn.whatsapp-btn:hover {
+  background: #e7f7ed;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.product-actions .row-btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 13px;
 }
 
 .listing-card h2 {
@@ -229,3 +278,37 @@ main {
   color: #888;
   font-size: 12px;
 }
+
+/* Inventory page */
+.inventory-note {
+  color: #666;
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e3e5e8;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.inventory-table th, .inventory-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.inventory-table th {
+  background: #0c1f3f;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.inventory-table td.in-stock { color: #147a3f; font-weight: 700; }
+.inventory-table td.out-of-stock { color: #b3261e; font-weight: 700; }

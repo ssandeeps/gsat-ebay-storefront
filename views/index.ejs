@@ -27,42 +27,53 @@
   }) %>
   </script>
 
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="<%= basePath %>/static/style.css" />
 </head>
 <body>
 
   <header class="site-header">
-    <a href="/" class="brand">G-SAT International</a>
+    <a href="<%= basePath %>/" class="brand">G-SAT International</a>
     <p class="tagline">Industrial Automation Parts — Live eBay Inventory</p>
   </header>
 
   <main>
     <h1 class="page-heading">Shop Our Parts (<%= listings.length %> in stock)</h1>
 
+    <nav class="breadcrumb"><span>eBay Listings</span> / <a href="<%= basePath %>/inventory">Live Inventory</a></nav>
+
     <% if (listings.length === 0) { %>
       <p class="empty-state">No active listings found right now. Check back soon.</p>
     <% } else { %>
       <div class="listings-grid">
         <% listings.forEach(function(item) { %>
-          <a class="listing-card" href="/products/<%= item.slug %>">
-            <img
-              src="<%= item.image || '/static/placeholder.png' %>"
-              alt="<%= item.title %>"
-              loading="lazy"
-              width="220" height="180"
-            />
-            <div class="card-body">
-              <h2><%= item.title %></h2>
-              <div class="price"><%= item.currency %> <%= item.price %></div>
-              <div class="qty">
-                <% if (item.quantity - item.quantitySold > 0) { %>
-                  In stock: <%= item.quantity - item.quantitySold %>
-                <% } else { %>
-                  Out of stock
-                <% } %>
+          <div class="listing-card">
+            <a class="listing-link" href="<%= basePath %>/products/<%= item.slug %>">
+              <img
+                src="<%= item.image || (basePath + '/static/placeholder.png') %>"
+                alt="<%= item.title %>"
+                loading="lazy"
+                width="220" height="180"
+              />
+              <div class="card-body">
+                <h2><%= item.title %></h2>
+                <div class="price"><%= item.currency %> <%= item.price %></div>
+                <div class="qty">
+                  <% if (item.quantity - item.quantitySold > 0) { %>
+                    In stock: <%= item.quantity - item.quantitySold %>
+                  <% } else { %>
+                    Out of stock
+                  <% } %>
+                </div>
               </div>
+            </a>
+            <div class="card-actions">
+              <a class="row-btn whatsapp-btn"
+                 href="https://wa.me/916360790704?text=<%= encodeURIComponent('Hi, I\'d like to enquire about ' + item.title + ' — is this in stock?') %>"
+                 target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              <a class="row-btn enquire-btn"
+                 href="mailto:sales@gsatinternational.com?subject=<%= encodeURIComponent('Enquiry: ' + item.title) %>&body=<%= encodeURIComponent('Hi, I would like to enquire about this item:\n\n' + item.title + '\n' + siteUrl + '/products/' + item.slug) %>">Enquire</a>
             </div>
-          </a>
+          </div>
         <% }); %>
       </div>
     <% } %>

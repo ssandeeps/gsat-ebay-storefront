@@ -37,21 +37,21 @@
   }) %>
   </script>
 
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="<%= basePath %>/static/style.css" />
 </head>
 <body>
 
   <header class="site-header">
-    <a href="/" class="brand">G-SAT International</a>
+    <a href="<%= basePath %>/" class="brand">G-SAT International</a>
     <p class="tagline">Industrial Automation Parts — Live eBay Inventory</p>
   </header>
 
   <main>
-    <nav class="breadcrumb"><a href="/">All Listings</a> / <span><%= item.title %></span></nav>
+    <nav class="breadcrumb"><a href="<%= basePath %>/">All Listings</a> / <span><%= item.title %></span></nav>
 
     <div class="product-detail">
       <div class="gallery">
-        <img class="main-image" src="<%= item.image || '/static/placeholder.png' %>" alt="<%= item.title %>" />
+        <img class="main-image" src="<%= item.image || (basePath + '/static/placeholder.png') %>" alt="<%= item.title %>" />
         <% if (item.images.length > 1) { %>
           <div class="thumbs">
             <% item.images.forEach(function(img) { %>
@@ -87,6 +87,14 @@
         <a class="buy-btn" href="<%= item.viewItemURL %>" target="_blank" rel="noopener">
           Buy on eBay
         </a>
+
+        <div class="product-actions">
+          <a class="row-btn whatsapp-btn"
+             href="https://wa.me/916360790704?text=<%= encodeURIComponent('Hi, I\'d like to enquire about ' + item.title + ' — is this in stock?') %>"
+             target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <a class="row-btn enquire-btn"
+             href="mailto:sales@gsatinternational.com?subject=<%= encodeURIComponent('Enquiry: ' + item.title) %>&body=<%= encodeURIComponent('Hi, I would like to enquire about this item:\n\n' + item.title + '\n' + siteUrl + '/products/' + item.slug) %>">Enquire</a>
+        </div>
       </div>
     </div>
 
