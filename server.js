@@ -21,18 +21,24 @@ const app = express();
 app.use(compression());
 app.use(cors()); // allows gsatinternational.com (or any site) to call /api/inventory
 app.set('view engine', 'ejs');
-app.use('/static', express.static('public'));
 
 const SITE_URL = (process.env.SITE_URL || 'http://localhost:3001').replace(/\/$/, '');
+// BASE_PATH lets this app run correctly behind a reverse proxy at a subpath,
+// e.g. BASE_PATH=/shop when proxied at https://www.gsatinternational.com/shop
+const BASE_PATH = (process.env.BASE_PATH || '').replace(/\/$/, '');
 const PORT = process.env.PORT || 3001;
 
+const router = express.Router();
+router.use('/static', express.static('public'));
+
 // ---- Storefront: listings grid ----
-app.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const listings = await getActiveListings();
     res.render('index', {
       listings,
       siteUrl: SITE_URL,
+      basePath: BASE_PATH,
       pageTitle: 'Shop Our Parts on eBay | G-SAT International',
       pageDescription:
         'Browse G-SAT International\'s live eBay inventory of industrial automation parts — in stock and ready to ship.',
@@ -44,7 +50,7 @@ app.get('/', async (req, res) => {
 });
 
 // ---- Individual product page: /products/some-title-123456789012 ----
-app.get('/products/:slug', async (req, res) => {
+router.get('/products/:slug', async (req, res) => {
   try {
     const match = req.params.slug.match(/(\d{9,})$/); // itemId is the trailing digits
     const itemId = match ? match[1] : null;
@@ -57,6 +63,7 @@ app.get('/products/:slug', async (req, res) => {
     res.render('product', {
       item,
       siteUrl: SITE_URL,
+      basePath: BASE_PATH,
       pageTitle: `${item.title} | G-SAT International`,
       pageDescription: item.description
         ? item.description.replace(/<[^>]+>/g, '').slice(0, 155)
@@ -70,7 +77,7 @@ app.get('/products/:slug', async (req, res) => {
 
 // ---- JSON endpoint: live inventory data (Make, Product Name, Quantity) ----
 // Public and read-only — safe to call from gsatinternational.com's static pages.
-app.get('/api/inventory', async (req, res) => {
+router.get('/api/inventory', async (req, res) => {
   try {
     const items = await getInventory();
     res.json({ count: items.length, items, updatedNote: 'Live from Google Sheet' });
@@ -81,12 +88,13 @@ app.get('/api/inventory', async (req, res) => {
 });
 
 // ---- Live inventory page, sourced from a private Google Sheet ----
-app.get('/inventory', async (req, res) => {
+router.get('/inventory', async (req, res) => {
   try {
     const items = await getInventory();
     res.render('inventory', {
       items,
       siteUrl: SITE_URL,
+      basePath: BASE_PATH,
       pageTitle: 'Live Inventory | G-SAT International',
       pageDescription: 'Live stock levels updated daily from our internal inventory.',
     });
@@ -97,7 +105,7 @@ app.get('/inventory', async (req, res) => {
 });
 
 // ---- JSON endpoint (optional — for AJAX stock refresh widgets elsewhere on your site) ----
-app.get('/api/listings', async (req, res) => {
+router.get('/api/listings', async (req, res) => {
   try {
     const listings = await getActiveListings();
     res.json({ count: listings.length, listings });
@@ -107,7 +115,7 @@ app.get('/api/listings', async (req, res) => {
 });
 
 // ---- Sitemap for SEO ----
-app.get('/sitemap.xml', async (req, res) => {
+router.get('/sitemap.xml', async (req, res) => {
   try {
     const listings = await getActiveListings();
     const urls = [
@@ -125,6 +133,8 @@ ${urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n')}
   }
 });
 
+app.use(BASE_PATH || '/', router);
+
 app.listen(PORT, () => {
-  console.log(`✅ Storefront running at http://localhost:${PORT}`);
+  console.log(`✅ Storefront running at http://localhost:${PORT}${BASE_PATH}`);
 });
