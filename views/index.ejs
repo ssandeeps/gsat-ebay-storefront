@@ -41,12 +41,17 @@
 
     <nav class="breadcrumb"><span>eBay Listings</span> / <a href="<%= basePath %>/inventory">Live Inventory</a></nav>
 
+    <div class="search-bar">
+      <input type="text" id="listingSearch" placeholder="Search by part name or manufacturer..." autocomplete="off" />
+      <span id="searchMeta" class="search-meta"></span>
+    </div>
+
     <% if (listings.length === 0) { %>
       <p class="empty-state">No active listings found right now. Check back soon.</p>
     <% } else { %>
-      <div class="listings-grid">
+      <div class="listings-grid" id="listingsGrid">
         <% listings.forEach(function(item) { %>
-          <div class="listing-card">
+          <div class="listing-card" data-search="<%= (item.title + ' ' + (item.currency||'')).toLowerCase().replace(/"/g,'') %>">
             <a class="listing-link" href="<%= basePath %>/products/<%= item.slug %>">
               <img
                 src="<%= item.image || (basePath + '/static/placeholder.png') %>"
@@ -82,5 +87,36 @@
   <footer class="site-footer">
     <p>&copy; <%= new Date().getFullYear() %> G-SAT International. Listings sourced live from eBay.</p>
   </footer>
+
+  <script>
+    (function(){
+      var input = document.getElementById('listingSearch');
+      var meta = document.getElementById('searchMeta');
+      var grid = document.getElementById('listingsGrid');
+      if(!input || !grid) return;
+
+      var cards = Array.prototype.slice.call(grid.querySelectorAll('.listing-card'));
+      var total = cards.length;
+
+      function updateMeta(shownCount){
+        if(input.value.trim() === ''){
+          meta.textContent = '';
+        } else {
+          meta.textContent = 'Showing ' + shownCount + ' of ' + total + ' parts';
+        }
+      }
+
+      input.addEventListener('input', function(){
+        var q = input.value.trim().toLowerCase();
+        var shown = 0;
+        cards.forEach(function(card){
+          var match = q === '' || card.getAttribute('data-search').indexOf(q) !== -1;
+          card.style.display = match ? '' : 'none';
+          if(match) shown++;
+        });
+        updateMeta(shown);
+      });
+    })();
+  </script>
 </body>
 </html>

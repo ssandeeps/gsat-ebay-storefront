@@ -39,6 +39,33 @@ main {
   margin-bottom: 20px;
 }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  max-width: 420px;
+  padding: 10px 14px;
+  border: 1px solid #d5d8dd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #0654ba;
+  box-shadow: 0 0 0 3px rgba(6, 84, 186, 0.12);
+}
+
+.search-meta {
+  font-size: 13px;
+  color: #666;
+}
+
 .empty-state {
   color: #777;
   text-align: center;
